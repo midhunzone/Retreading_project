@@ -2,111 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tyre Retread Plant Profitability Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retread Profitability Calculator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        form { max-width: 600px; margin: auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; }
-        .result { margin-top: 20px; font-weight: bold; }
+        body {
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
     </style>
 </head>
 <body>
-    <h1>Tyre Retread Plant Profitability Calculator</h1>
-    <form id="profitabilityForm">
-        <h2>Fixed Assets</h2>
-        <div class="form-group">
-            <label for="landCost">Land Cost (Rs):</label>
-            <input type="number" id="landCost" value="30000">
+    <div class="container">
+        <h2 class="text-center">Retread Profitability Calculator</h2>
+        <form method="POST" action="/calculate">
+            <div class="form-group">
+                <label for="number_of_tyres">Number of Tyres Retreaded:</label>
+                <input type="number" class="form-control" id="number_of_tyres" name="number_of_tyres" required>
+            </div>
+            <div class="form-group">
+                <label for="fixed_capital">Fixed Capital (Rs):</label>
+                <input type="number" class="form-control" id="fixed_capital" name="fixed_capital" required>
+            </div>
+            <div class="form-group">
+                <label for="patches_cost">Patches Cost per Unit (Rs):</label>
+                <input type="number" class="form-control" id="patches_cost" name="patches_cost" required>
+            </div>
+            <div class="form-group">
+                <label for="envelopes_cost">Envelopes Cost per Unit (Rs):</label>
+                <input type="number" class="form-control" id="envelopes_cost" name="envelopes_cost" required>
+            </div>
+            <div class="form-group">
+                <label for="other_consumables_cost">Other Consumables Cost per Tyre (Rs):</label>
+                <input type="number" class="form-control" id="other_consumables_cost" name="other_consumables_cost" required>
+            </div>
+            <div class="form-group">
+                <label for="operating_expenses">Total Operating Expenses (Rs):</label>
+                <input type="number" class="form-control" id="operating_expenses" name="operating_expenses" required>
+            </div>
+            <div class="form-group">
+                <label for="sales_realization">Total Sales Realization (Rs):</label>
+                <input type="number" class="form-control" id="sales_realization" name="sales_realization" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Calculate Profitability</button>
+        </form>
+        <br>
+        {% if fixed_capital is not none %}
+        <div>
+            <h4>Fixed Capital: Rs {{ "{:,.2f}".format(fixed_capital) }}</h4>
+            <h4>Raw Material Cost per Tyre: Rs {{ "{:,.2f}".format(raw_material_cost_per_tyre) }}</h4>
+            <h4>Gross Margin: Rs {{ "{:,.2f}".format(gross_margin) }}</h4>
+            <h4>Taxes at 12%: Rs {{ "{:,.2f}".format(taxes) }}</h4>
+            <h4>Net Margin: Rs {{ "{:,.2f}".format(net_margin) }}</h4>
+            <h4>Profit Percentage: {{ "{:.2f}".format(profit_percentage) }}%</h4>
+            <h4>Return on Investment: {{ "{:.2f}".format(roi) }}%</h4>
         </div>
-        <div class="form-group">
-            <label for="buildingCost">Building Cost (Rs):</label>
-            <input type="number" id="buildingCost" value="1200000">
-        </div>
-        <div class="form-group">
-            <label for="machineryCost">Machinery Cost (Rs):</label>
-            <input type="number" id="machineryCost" value="1500000">
-        </div>
-        <div class="form-group">
-            <label for="miscAssetsCost">Miscellaneous Assets Cost (Rs):</label>
-            <input type="number" id="miscAssetsCost" value="1000000">
-        </div>
-
-        <h2>Raw Materials</h2>
-        <div class="form-group">
-            <label for="precuredTreadRubberCost">Pre-cured Tread Rubber Cost per Kg (Rs):</label>
-            <input type="number" id="precuredTreadRubberCost" value="199">
-        </div>
-        <div class="form-group">
-            <label for="bondingGumCost">Bonding Gum Cost per Kg (Rs):</label>
-            <input type="number" id="bondingGumCost" value="244">
-        </div>
-        <div class="form-group">
-            <label for="vulcanizingSolutionCost">Vulcanizing Solution Cost per Liter (Rs):</label>
-            <input type="number" id="vulcanizingSolutionCost" value="120">
-        </div>
-        <div class="form-group">
-            <label for="patchesCost">Patches Cost per Unit (Rs):</label>
-            <input type="number" id="patchesCost" value="100">
-        </div>
-        <div class="form-group">
-            <label for="envelopesCost">Envelopes Cost per Unit (Rs):</label>
-            <input type="number" id="envelopesCost" value="3500">
-        </div>
-        <div class="form-group">
-            <label for="consumablesCost">Other Consumables Cost per Tyre (Rs):</label>
-            <input type="number" id="consumablesCost" value="25">
-        </div>
-
-        <h2>Other Costs</h2>
-        <div class="form-group">
-            <label for="operatingExpenses">Total Operating Expenses (Rs):</label>
-            <input type="number" id="operatingExpenses" value="20302678">
-        </div>
-        <div class="form-group">
-            <label for="salesRealization">Total Sales Realization (Rs):</label>
-            <input type="number" id="salesRealization" value="255600000">
-        </div>
-        <button type="button" onclick="calculateProfitability()">Calculate Profitability</button>
-    </form>
-    <div class="result" id="result"></div>
-    <script>
-        function calculateProfitability() {
-            const landCost = parseFloat(document.getElementById('landCost').value);
-            const buildingCost = parseFloat(document.getElementById('buildingCost').value);
-            const machineryCost = parseFloat(document.getElementById('machineryCost').value);
-            const miscAssetsCost = parseFloat(document.getElementById('miscAssetsCost').value);
-
-            const precuredTreadRubberCost = parseFloat(document.getElementById('precuredTreadRubberCost').value);
-            const bondingGumCost = parseFloat(document.getElementById('bondingGumCost').value);
-            const vulcanizingSolutionCost = parseFloat(document.getElementById('vulcanizingSolutionCost').value);
-            const patchesCost = parseFloat(document.getElementById('patchesCost').value);
-            const envelopesCost = parseFloat(document.getElementById('envelopesCost').value);
-            const consumablesCost = parseFloat(document.getElementById('consumablesCost').value);
-
-            const operatingExpenses = parseFloat(document.getElementById('operatingExpenses').value);
-            const salesRealization = parseFloat(document.getElementById('salesRealization').value);
-
-            const fixedCapital = landCost + buildingCost + machineryCost + miscAssetsCost;
-            const rawMaterialCostPerTyre = precuredTreadRubberCost * 11.5 + bondingGumCost * 1.25 + vulcanizingSolutionCost * 0.75 + patchesCost * 0.24 + envelopesCost * 0.02 + consumablesCost;
-
-            const grossMargin = salesRealization - operatingExpenses;
-            const taxes = grossMargin * 0.12;
-            const netMargin = grossMargin - taxes;
-            const profitPercentage = (netMargin / salesRealization) * 100;
-            const returnOnInvestment = (netMargin / fixedCapital) * 100;
-
-            document.getElementById('result').innerHTML = `
-                <p>Fixed Capital: Rs ${fixedCapital.toFixed(2)}</p>
-                <p>Raw Material Cost per Tyre: Rs ${rawMaterialCostPerTyre.toFixed(2)}</p>
-                <p>Gross Margin: Rs ${grossMargin.toFixed(2)}</p>
-                <p>Taxes at 12%: Rs ${taxes.toFixed(2)}</p>
-                <p>Net Margin: Rs ${netMargin.toFixed(2)}</p>
-                <p>Profit Percentage: ${profitPercentage.toFixed(2)}%</p>
-                <p>Return on Investment: ${returnOnInvestment.toFixed(2)}%</p>
-            `;
-        }
-    </script>
+        {% elif error is not none %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+    </div>
 </body>
 </html>
+
